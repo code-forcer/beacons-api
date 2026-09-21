@@ -35,7 +35,7 @@ router.post(
         .cookie('token', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         })
         .json({ success: true, message: 'Login successful.', admin: { email: admin.email, role: admin.role } });

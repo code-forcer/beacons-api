@@ -303,14 +303,10 @@ async function seed() {
     console.log('✅ Connected to MongoDB');
 
     // ── Seed admin user ───────────────────────────────────────────────────────
-    const existingAdmin = await AdminUser.findOne({ email: ADMIN_EMAIL });
-    if (!existingAdmin) {
-      const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 12);
-      await AdminUser.create({ email: ADMIN_EMAIL, passwordHash, role: 'admin' });
-      console.log(`✅ Admin user created: ${ADMIN_EMAIL}`);
-    } else {
-      console.log(`ℹ️  Admin user already exists: ${ADMIN_EMAIL}`);
-    }
+    const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 12);
+    await AdminUser.deleteMany({}); // Reset AdminUser collection so only the official email exists
+    await AdminUser.create({ email: ADMIN_EMAIL.toLowerCase(), passwordHash, role: 'admin' });
+    console.log(`✅ Admin user created/updated: ${ADMIN_EMAIL}`);
 
     // Clear old records to ensure clean web-safe URLs are stored
     await Project.deleteMany({});
